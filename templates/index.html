@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Scam Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🚨 AI Scam Detector</h1>
+    <p class="subtitle">AI-powered scam detection with explainability</p>
+
+    <form method="POST" onsubmit="showLoader()">
+        <textarea name="message" placeholder="Paste message here..." required></textarea>
+
+        <div class="buttons">
+            <button type="submit">Analyze</button>
+            <button type="button" onclick="clearText()">Clear</button>
+        </div>
+    </form>
+
+    <p>Try example:</p>
+    <button class="example-btn" onclick="fillExample()">Example Scam</button>
+
+    <!-- Loader -->
+    <div id="loader" class="loader" style="display:none;">
+        🔍 Analyzing message...
+    </div>
+
+    {% if result %}
+    <div class="result {{ result.risk|lower }}">
+        
+        <h2 class="score" id="score">{{ result.score }}%</h2>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <h3>
+            {% if result.risk == "High" %} 🔴 {% endif %}
+            {% if result.risk == "Medium" %} 🟠 {% endif %}
+            {% if result.risk == "Low" %} 🟢 {% endif %}
+            <span class="risk-text">{{ result.risk }} Risk</span>
+        </h3>
+
+        <h4>⚠️ Detection Reasons</h4>
+        <ul>
+            {% for r in result.reasons %}
+            <li>{{ r }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4>💡 Recommended Actions</h4>
+        <ul>
+            {% if result.risk == "High" %}
+                <li>Do NOT click any links</li>
+                <li>Do NOT share OTP/password</li>
+                <li>Contact official source directly</li>
+            {% elif result.risk == "Medium" %}
+                <li>Verify sender before acting</li>
+                <li>Avoid clicking unknown links</li>
+            {% else %}
+                <li>This message appears safe</li>
+            {% endif %}
+        </ul>
+
+    </div>
+    {% endif %}
+<p class="footer">Built with AI + NLP | Scam Detection System</p>
+</div>
+
+<!-- Scripts -->
+<script>
+function showLoader() {
+    document.getElementById("loader").style.display = "block";
+}
+
+function clearText() {
+    document.querySelector("textarea").value = "";
+}
+
+function fillExample() {
+    document.querySelector("textarea").value =
+    "Your account is blocked. Click here and enter OTP";
+}
+
+// 🔥 Smooth animation (number + bar)
+let scoreElement = document.getElementById("score");
+let progressBar = document.getElementById("progress");
+
+if(scoreElement && progressBar){
+    let target = parseInt(scoreElement.innerText);
+    let current = 0;
+
+    let interval = setInterval(() => {
+        if(current >= target){
+            clearInterval(interval);
+        } else {
+            current++;
+            scoreElement.innerText = current + "%";
+            progressBar.style.width = current + "%";
+        }
+    }, 15); // adjust speed here (bigger = slower)
+}
+</script>
+
+</body>
+</html>
